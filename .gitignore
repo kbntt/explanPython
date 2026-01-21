@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+*.pkl
+*.log
+*.csv
+
+# Virtualenv
+venv/
+myenv/
+
+# IDE
+.vscode/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Secrets
+.env
+*.key

@@ -1,24 +1,26 @@
 SELECT BRAND_ID      
       ,STORE_ID      
       ,YYYYMM    
-      ,SUBSTR(YYYYMM, 1, 4) AS YEAR
-      ,SUBSTR(YYYYMM, 6, 2) AS MONTH    
-      ,GDP           
-      ,INFLATION_RATE
-      ,UNEMPLOYMENT  
-      ,INTEREST_RATE 
-      ,CCSI          
-      ,SALES   
-      ,COGS_AMT
-      ,LABOR_COST
-      ,SELL_EXPENSE
-      ,ADMIN_EXPENSE
-      ,OTHER_GA_EXP
-      ,STORE_STATE_OPEN 
-      ,STORE_STATE_CLOSE
-      ,STORE_STATE_ALL 
+      ,CAST(SUBSTR(YYYYMM, 1, 4) AS NUMBER) AS YEAR   /* 숫자로 형변환하여 전달 */
+      ,CAST(SUBSTR(YYYYMM, 6, 2) AS NUMBER) AS MONTH  /* 숫자로 형변환하여 전달 */
+      ,NVL(GDP, 0)            AS GDP           
+      ,NVL(INFLATION_RATE, 0) AS INFLATION_RATE
+      ,NVL(UNEMPLOYMENT, 0)   AS UNEMPLOYMENT  
+      ,NVL(INTEREST_RATE, 0)  AS INTEREST_RATE 
+      ,NVL(CCSI, 0)           AS CCSI          
+      ,NVL(SALES, 0)          AS SALES   
+      ,NVL(COGS_AMT, 0)       AS COGS_AMT
+      ,NVL(LABOR_COST, 0)     AS LABOR_COST
+      ,NVL(SELL_EXPENSE, 0)   AS SELL_EXPENSE
+      ,NVL(ADMIN_EXPENSE, 0)  AS ADMIN_EXPENSE
+      ,NVL(OTHER_GA_EXP, 0)   AS OTHER_GA_EXP
+      /* 핵심: NULL이면 0 또는 적절한 기본값으로 치환 */
+      ,NVL(ROUND(AVG_SALES_3M), 0) AS AVG_SALES_3M
+      ,NVL(ROUND(SALES_LAG_1), 0)  AS SALES_LAG_1
+      ,NVL(STORE_STATE_OPEN, 0)    AS STORE_STATE_OPEN 
+      ,NVL(STORE_STATE_CLOSE, 0)   AS STORE_STATE_CLOSE
+      ,NVL(STORE_STATE_ALL, 0)     AS STORE_STATE_ALL 
 FROM   TBL_EXP_PREDICT_SALES_INFO
-WHERE  1 = 1
-AND    BRAND_ID = :brand_id
+WHERE  BRAND_ID = :brand_id
 AND    ( :yyyymm IS NULL OR YYYYMM = :yyyymm )
 ORDER BY YYYYMM, STORE_ID

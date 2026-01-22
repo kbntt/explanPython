@@ -79,11 +79,11 @@ def add_sales_lag_features(df: pd.DataFrame) -> pd.DataFrame:
 def get_feature_cols(macro_vars: list[str], use_lag: bool):
     """
     모델 입력 컬럼 정의
-    - SALES: macro + YEAR + TIME_IDX (+ lag)
-    - COST : macro + YEAR + TIME_IDX + SALES (+ lag)  ※ COST는 evaluate 단계에서 SALES를 SALES_PRED로 대체
+    - SALES : macro + YEAR + TIME_IDX + AVG_SALES_3M (+ lag)
+    - COST  : macro + YEAR + TIME_IDX + SALES + AVG_SALES_3M (+ lag)
     """
-    base_sales_num = macro_vars + ["YEAR", "TIME_IDX"]
-    base_cost_num = macro_vars + ["YEAR", "TIME_IDX", "SALES"]
+    base_sales_num = macro_vars + ["YEAR", "TIME_IDX", "AVG_SALES_3M"]
+    base_cost_num  = macro_vars + ["YEAR", "TIME_IDX", "SALES", "AVG_SALES_3M"]
 
     if use_lag:
         lag_cols = ["SALES_LAG_1", "SALES_LAG_12"]
@@ -369,7 +369,7 @@ def main():
         "GDP", "INFLATION_RATE", "UNEMPLOYMENT", "INTEREST_RATE", "CCSI",
         "STORE_STATE_OPEN", "STORE_STATE_CLOSE", "STORE_STATE_ALL",
         "SALES", "COGS_AMT", "LABOR_COST", "SELL_EXPENSE", "ADMIN_EXPENSE", "OTHER_GA_EXP",
-        "TIME_IDX"
+        "TIME_IDX", "AVG_SALES_3M", "SALES_LAG_1" 
     ]
     for col in numeric_candidates:
         if col in df.columns:
@@ -395,7 +395,7 @@ def main():
     if macro_vars:
         df[macro_vars] = df[macro_vars].ffill().bfill()
 
-    required_features = [c for c in ["YEAR", "MONTH", "TIME_IDX", "STORE_ID"] if c in df.columns]
+    required_features = [c for c in ["YEAR", "MONTH", "TIME_IDX", "STORE_ID", "AVG_SALES_3M"] if c in df.columns]
     df = df.dropna(subset=required_features)
 
     # 3) Lag 피처 생성
